@@ -7,6 +7,8 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+
 
 function ModeSelect() {
   // const [age, setAge] = React.useState('')
@@ -52,9 +54,39 @@ function ModeSelect() {
 
 function App() {
   return (
-    <>
-      <ModeSelect />
-    </>
+    <Container disableGutters maxWidth={false} sx={{ height: '100vh' }}>
+      <Box sx={{
+        bgcolor: 'primary.light',
+        width: '100%',
+        height: (theme) => theme.trelloCustoms.appBarHeight,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        Header
+        <ModeSelect />
+      </Box>
+
+      <Box sx={{
+        bgcolor: 'primary.dark',
+        width: '100%',
+        height: (theme) => theme.trelloCustoms.boardBarHeight,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        Board Bar
+      </Box>
+
+      <Box sx={{
+        height: (theme) => `calc(100vh - ${theme.trelloCustoms.appBarHeight} - ${theme.trelloCustoms.boardBarHeight})`,
+        display: 'flex',
+        alignItems: 'center',
+        bgcolor: 'primary.dark'
+      }}>
+        Board Content
+      </Box>
+    </Container>
   )
 }
 
