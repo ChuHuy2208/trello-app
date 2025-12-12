@@ -8,19 +8,8 @@ const theme = extendTheme({
     boardBarHeight: '60px'
   },
   colorSchemes: {
-    light: {
-      palette: {
-        // primary: teal,
-        // secondary: deepOrange
-      }
-    },
-    dark: {
-      palette: {
-        // primary: cyan,
-        // secondary: orange
-
-      }
-    }
+    light: {},
+    dark: {}
   },
   components: {
     MuiCssBaseline: {
@@ -44,31 +33,32 @@ const theme = extendTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          borderWidth: '0.5px !important',
         }
       }
     },
     MuiInputLabel: {
       styleOverrides: {
-        root: ({ theme }) => ({
-          color: theme.palette.primary.main,
+        root: {
           fontSize: '0.875rem'
-        })
+        }
       }
     },
     MuiOutlinedInput: {
       styleOverrides: {
-        root: ({ theme }) => ({
-          color: theme.palette.primary.main,
+        root: {
           fontSize: '0.875rem',
-          '.MuiOutlinedInput-notchedOutline': { borderColor: theme.palette.primary.main },
-          '&:hover': {
-            '.MuiOutlinedInput-notchedOutline': { borderColor: theme.palette.primary.main }
-          },
           '& fieldset': {
+            borderWidth: '0.5px !important'
+          },
+          '&:hover fieldset': {
+            borderWidth: '1px !important'
+          },
+          '&.Mui-focused fieldset': {
             borderWidth: '1px !important'
           }
-        })
+        }
       }
     }
   }
