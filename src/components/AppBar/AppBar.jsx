@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import ModeSelect from '~/components/ModeSelect/ModeSelect'
 import Box from '@mui/material/Box'
 import AppsIcon from '@mui/icons-material/Apps'
@@ -15,8 +16,14 @@ import Tooltip from '@mui/material/Tooltip'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import Profiles from './Menus/Profiles'
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
+import InputAdornment from '@mui/material/InputAdornment'
+import SearchIcon from '@mui/icons-material/Search'
+import CloseIcon from '@mui/icons-material/Close'
 
 function AppBar() {
+  const [searchValue, setSearchValue] = useState('')
+
   return (
     <Box sx={{
       width: '100%',
@@ -27,14 +34,15 @@ function AppBar() {
       px: 2,
       gap: 2,
       overflowX: 'auto',
-      overflowY: 'hidden'
+      overflowY: 'hidden',
+      bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#2c3e50' : '#1565c0')
     }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <AppsIcon sx={{ color: 'primary.main' }} />
+        <AppsIcon sx={{ color: 'white' }} />
 
         <Box sx={{ display: 'flex', alignItems:  'center', gap: 0.5 }}>
-          <SvgIcon component={TrelloIcon} inheritViewBox fontSize="small" />
-          <Typography sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Trello</Typography>
+          <SvgIcon component={TrelloIcon} inheritViewBox fontSize="small" sx={{ color: 'white' }} />
+          <Typography sx={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'white' }}>Trello</Typography>
         </Box>
 
         <Box sx={{ display: { xs:'none', md: 'flex' }, gap: 1 }}>
@@ -42,24 +50,64 @@ function AppBar() {
           <Recent />
           <Starred />
           <Templates />
-          <Button variant="outlined">Create</Button>
+          <Button variant="outlined" startIcon={<LibraryAddIcon />} sx={{
+            color: 'white',
+            border: 'none',
+            '&:hover': { border: 'none' }
+          }}
+          >
+            Create
+          </Button>
         </Box>
       </Box>
 
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <TextField id="outlined-search" label="Search...." type="search" size="small" sx={{ minWidth: 120 }} />
+        <TextField
+          id="outlined-search"
+          label="Search...."
+          type="text"
+          size="small"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          sx={{
+            minWidth: 120,
+            maxWidth: 180,
+            '& label': { color: 'white' },
+            '& input': { color: 'white' },
+            '& label.Mui-focused': { color: 'white' },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: 'white', },
+              '&:hover fieldset': { borderColor: 'white' },
+              '&.Mui-focused fieldset': { borderColor: 'white' }
+            }
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: 'white' }} />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <CloseIcon
+                fontSize="small"
+                sx={{ color: searchValue ? 'white' : 'transparent', cursor: 'pointer' }}
+                onClick={() => setSearchValue('')}
+              />
+            )
+          }}
+        />
         
         <ModeSelect />
 
         <Tooltip title="Notifications">
-          <Badge color="secondary" variant="dot">
-            <NotificationsNoneIcon sx={{ color: 'primary.main' }} />
+          <Badge color="warning" variant="dot">
+            <NotificationsNoneIcon sx={{ color: 'white' }} />
           </Badge>
         </Tooltip>
 
         <Tooltip title="Help">
-          <HelpOutlineIcon sx={{ color: 'primary.main' }} />
+          <HelpOutlineIcon sx={{ color: 'white' }} />
         </Tooltip>
 
         <Profiles />
