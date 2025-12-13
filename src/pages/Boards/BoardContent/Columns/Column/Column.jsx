@@ -19,7 +19,23 @@ import Button from '@mui/material/Button'
 import Cards from './Cards/Cards'
 import { mapOrder } from '~/utils/softs'
 
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities' 
+
 function Column({ column }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: column._id,
+    data: {...column}
+  })
+  
+  const DndKitColumnStyle = {
+    // touchAction: 'none', // Dành cho sensor: default dạng pointeSensor
+    // Nếu sử dụng CSS.Transform.toString(transform) thì sẽ bị lỗi kiểu strech
+    transform: CSS.Translate.toString(transform),
+    transition,
+  }
+
+
   const orderedColumn = mapOrder(column?.cards, column?.cardOrderIds, '_id')
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
@@ -27,16 +43,22 @@ function Column({ column }) {
   const handleClose = () => setAnchorEl(null)
 
   return (
-    <Box sx={{
-      mixWidth: '300px',
-      maxWidth: '300px',
-      bgcolor: (theme) => ( theme.palette.mode === 'dark' ? '#333643' : '#ebecf0' ),
-      ml: 2,
-      borderRadius: 6,
-      width: '100%',
-      height: 'fit-content',
-      maxHeight: (theme) => `calc(${theme.trelloCustoms.boardContentHeight} - ${theme.spacing(5)})`
-    }}>
+    <Box
+      sx={{
+        minWidth: '300px',
+        maxWidth: '300px',
+        width: '100%',
+        bgcolor: (theme) => ( theme.palette.mode === 'dark' ? '#333643' : '#ebecf0' ),
+        ml: 2,
+        borderRadius: 6,
+        height: 'fit-content',
+        maxHeight: (theme) => `calc(${theme.trelloCustoms.boardContentHeight} - ${theme.spacing(5)})`
+      }}
+      ref={setNodeRef}
+      style={DndKitColumnStyle}
+      {...attributes}
+      {...listeners}
+    >
       {/* Box Header */}
       <Box sx={{
         height: (theme) => theme.trelloCustoms.columnHeaderHeight,
