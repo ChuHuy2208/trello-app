@@ -17,8 +17,10 @@ import AddCardIcon from '@mui/icons-material/AddCard'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Cards from './Cards/Cards'
+import { mapOrder } from '~/utils/softs'
 
-function Column() {
+function Column({ column }) {
+  const orderedColumn = mapOrder(column?.cards, column?.cardOrderIds, '_id')
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const handleClick = (event) => setAnchorEl(event.currentTarget)
@@ -48,7 +50,7 @@ function Column() {
           fontWeight: 'bold',
           cursor: 'pointer'
         }}>
-          Column Title
+          {column?.title}
         </Typography>
         <Box>
           <Tooltip title="More Options">
@@ -102,7 +104,7 @@ function Column() {
       </Box>
 
       {/* List Card */}
-      <Cards />
+      <Cards cards={orderedColumn}/>
 
       {/* Box Footer */}
       <Box sx={{
