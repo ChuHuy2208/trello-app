@@ -34,13 +34,16 @@ function Card({ card}) {
 
   return (
     <DefaultCard 
+      ref={setNodeRef}
+      style={DndKitCardStyle} {...attributes} {...listeners}
       sx={{
         cursor: 'pointer',
         boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
-        overflow: 'unset'
+        // overflow: 'unset',
+        // display: card?.FE_PlaceholderCard ? 'none' : 'block',
+        // overflow: card?.FE_PlaceholderCard ? 'hidden' : 'unset',
+        height: card?.FE_PlaceholderCard ? '0px' : 'unset'
       }}
-      ref={setNodeRef}
-      style={DndKitCardStyle} {...attributes} {...listeners}
     >
       {card?.cover && <CardMedia sx={{ height: 140 }} image={card?.cover} /> }
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
