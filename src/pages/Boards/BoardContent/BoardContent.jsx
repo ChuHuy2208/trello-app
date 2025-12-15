@@ -2,10 +2,11 @@
 import Box from '@mui/material/Box'
 import Columns from './Columns/Columns'
 import { mapOrder } from '~/utils/softs'
-import { DndContext, PointerSensor, useSensor, useSensors, MouseSensor, TouchSensor, DragOverlay, defaultDropAnimationSideEffects, closestCorners, closestCenter, pointerWithin, rectIntersection, getFirstCollision } from '@dnd-kit/core'
+import { DndContext, useSensor, useSensors, MouseSensor, TouchSensor, DragOverlay, defaultDropAnimationSideEffects, closestCorners, pointerWithin, getFirstCollision } from '@dnd-kit/core'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
+import { generatePlaceholderCard } from '~/utils/fomatter'
 
 import Column from './Columns/Column/Column'
 import Card from './Columns/Column/Cards/Card/Card'
@@ -81,6 +82,10 @@ function BoardContent({ board }) {
       if (nextActiveColumn) {
         // Xoá card ở cái column active (có thể hiểu là column cũ, cái lúc mà kéo card ra khỏi nó để kéo sang column khác)
         nextActiveColumn.cards = nextActiveColumn.cards.filter(card => card._id !== activeDraggingCardId)
+        // Thêm placeholder card néu column này rỗng
+        if (isEmpty(nextActiveColumn.cards)) {
+          nextActiveColumn.cards = [generatePlaceholderCard(nextActiveColumn)]
+        }
         // Cập nhật lại mảng cardOrderIds cho chuẩn dữ liệu
         nextActiveColumn.cardOrderIds = nextActiveColumn.cards.map(card => card._id)
       }
@@ -104,10 +109,14 @@ function BoardContent({ board }) {
           columnId: nextOverColumn._id
           }
         )
+
+        // Xoá cái Placeholder card đi nếu nó đang tồn tại 
+        nextOverColumn.cards = nextOverColumn.cards.filter(card => !card.FE_PlaceholderCard)
+
         // Cập nhật lại mảng cardOrderIds cho chuẩn dữ liệu
         nextOverColumn.cardOrderIds = nextOverColumn.cards.map(card => card._id)
       }
-
+      
       return nextColumns
     })
   }
@@ -206,7 +215,6 @@ function BoardContent({ board }) {
           active,
           over,
           pointerWithin,
-          rectIntersection,
           getFirstCollision
         )
       } else {
@@ -284,24 +292,30 @@ function BoardContent({ board }) {
 
     // Tìm các điểm va chạm giữa intersection với con trỏ
     const pointerIntersection = pointerWithin(args)
-    const intersections = pointerIntersection.length > 0 ? pointerIntersection : rectIntersection(args)
 
-    // Tìm overId trong đám intersections ở trên
-    let overId = getFirstCollision(intersections, 'id')
+    // Fix triệt để cái bug flickering của thư viện dnd-kit trong trường hợp: 
+    // - Kéo 1 cái card có image cover lớn lên phía trên cùng ra khỏi khu vực kéo thả
+    if (!pointerIntersection?.length) return
+
+    // Thuật toán phát hiện va chạm sẽ trả về 1 mảng ở đây
+    // const intersections = pointerIntersection.length > 0 ? pointerIntersection : rectIntersection(args)
+
+    // Tìm overId trong đám pointerIntersection ở trên
+    let overId = getFirstCollision(pointerIntersection, 'id')
 
     if (overId) {
-      console.log('overId before: ', overId)
+      // console.log('overId before: ', overId)
       // Đoạn này là fix bug flickering
-      // Nếu over nó là column thì sẽ tìm tới cái cardId gần nhất bên trong khu vực va chạm đó dựa vào thuật toán phát hiện va chạm closestCenter hoặc closestCorners đều được. Tuy nhiên dùng closestCenter thì sẽ mượt hơn
+      // Nếu over nó là column thì sẽ tìm tới cái cardId gần nhất bên trong khu vực va chạm đó dựa vào thuật toán phát hiện va chạm closestCenter hoặc closestCorners đều được. Tuy nhiên dùng closestCorners thì sẽ mượt hơn
       const checkColumn = orderedColumns.find(column => column._id === overId)
       if (checkColumn) {
-        overId = closestCenter({
+        overId = closestCorners({
           ...args,
           droppableContainers: args.droppableContainers.filter(container => {
             return (container.id !== overId) && (checkColumn?.cardOrderIds?.includes(container.id))
           })
         })[0?.id]
-        console.log('overId after: ', overId)
+        // console.log('overId after: ', overId)
       }
 
       lastOverId.current = overId
